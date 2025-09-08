@@ -1,0 +1,1 @@
+![Texto alternativo](C:\Users\yosoyEMPI\Desktop\Tp1Prog4\Ejericio3Diagram.png)
