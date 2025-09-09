@@ -15,6 +15,9 @@
 - npm i @types/node -D
 - npm i ts-node -D
 
+### Inicializar configuración de TypeScript
+- npx tsc --init
+
 ### Compilar el proyecto
 
 - npx tsc
