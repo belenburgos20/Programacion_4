@@ -1,5 +1,5 @@
 ## Diagrama correspondiente al ejercicio.
-## Este proyecto implementa un sistema de clases en TypeScript usando
+## Este proyecto implementa un sistema de clases en TypeScript.
 ![alt text](image.png)
 
 ### Incluye:
