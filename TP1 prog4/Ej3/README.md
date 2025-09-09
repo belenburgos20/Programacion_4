@@ -1,3 +1,3 @@
-## Diagrama correspondiente al ejercicio
+## Diagrama correspondiente al ejercicio.
 
-![Uploading image.png…]()
+![alt text](image.png)
