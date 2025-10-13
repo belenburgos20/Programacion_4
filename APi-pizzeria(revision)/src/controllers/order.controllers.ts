@@ -69,7 +69,7 @@ export const ordersController = {
         message: "Orden cancelada exitosamente",
       })
     } catch (error) {
-      if (error instanceof Error && error.message === "Cannot cancel delivered order") {
+      if (error instanceof Error && error.message === "No se puede cancelar la orden") { 
         return res.status(409).json({ error: "No se puede cancelar la orden" })
       }
       return res.status(500).json({ error: "Error interno del servidor" })

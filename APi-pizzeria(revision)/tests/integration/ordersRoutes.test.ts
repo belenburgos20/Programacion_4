@@ -10,7 +10,7 @@ describe("ordenes routes", () => {
   })
 
   describe("POST /", () => {
-    test("debería crear un pedido válido y retornar 201", async () => {
+    test("deberia crear un pedido valido y retornar 201", async () => {
       const respuesta = await request(app)
         .post("/")
         .send({
@@ -24,7 +24,7 @@ describe("ordenes routes", () => {
       expect(respuesta.body.estado).toBe("pendiente")
     })
 
-    test("debería rechazar pedido con items vacío (422)", async () => {
+    test("deberia rechazar pedido con items vacio (422)", async () => {
       const respuesta = await request(app).post("/").send({
         items: [],
         direccion: "Calle Falsa 123",
@@ -32,7 +32,7 @@ describe("ordenes routes", () => {
       expect(respuesta.status).toBe(422)
     })
 
-    test("debería rechazar pedido con direccion muy corto (422)", async () => {
+    test("deberia rechazar pedido con direccion muy corto (422)", async () => {
       const respuesta = await request(app)
         .post("/")
         .send({
@@ -45,28 +45,28 @@ describe("ordenes routes", () => {
   })
 
   describe("GET /:id", () => {
-    test("debería retornar un pedido existente (200)", async () => {
+    test("deberia retornar un pedido existente (200)", async () => {
       const orden = ordersService.crear([{ tamanio: "M", toppings: ["queso"] }], "Calle Falsa 123")
       const respuesta = await request(app).get(`/${orden.id}`)
       expect(respuesta.status).toBe(200)
       expect(respuesta.body.id).toBe(orden.id)
     })
 
-    test("debería retornar 404 si el pedido no existe", async () => {
+    test("deberia retornar 404 si el pedido no existe", async () => {
       const respuesta = await request(app).get("/:id")
       expect(respuesta.status).toBe(404)
     })
   })
 
   describe("POST /:id/cancel", () => {
-    test("debería cancelar un pedido pendiente (200)", async () => {
+    test("deberia cancelar un pedido pendiente (200)", async () => {
       const orden = ordersService.crear([{ tamanio: "M", toppings: ["queso"] }], "Calle Falsa 123")
       const respuesta = await request(app).post(`/${orden.id}/cancel`)
       expect(respuesta.status).toBe(200)
       expect(respuesta.body.estado).toBe("cancelado")
     })
 
-    test("debería rechazar cancelar un pedido entregado (409)", async () => {
+    test("deberia rechazar cancelar un pedido entregado (409)", async () => {
       const orden = ordersService.crear([{ tamanio: "M", toppings: ["queso"] }], "Calle Falsa 123")
       orden.estado = "entregado"
       const respuesta = await request(app).post(`/${orden.id}/cancel`)
@@ -75,7 +75,7 @@ describe("ordenes routes", () => {
   })
 
   describe("GET /", () => {
-    test("debería listar todos los pedidos", async () => {
+    test("deberia listar todos los pedidos", async () => {
       ordersService.crear([{ tamanio: "M", toppings: ["queso"] }], "Direccion 1")
       ordersService.crear([{ tamanio: "L", toppings: ["jamón"] }], "Direccion 2")
       const respuesta = await request(app).get("/")
@@ -84,7 +84,7 @@ describe("ordenes routes", () => {
       expect(respuesta.body.length).toBe(2)
     })
 
-    test("debería filtrar pedidos por estado", async () => {
+    test("deberia filtrar pedidos por estado", async () => {
       const orden1 = ordersService.crear([{ tamanio: "M", toppings: ["queso"] }], "Direccion 1")
       const orden2 = ordersService.crear([{ tamanio: "L", toppings: ["jamón"] }], "Direccion 2")
       orden2.estado = "entregado"
