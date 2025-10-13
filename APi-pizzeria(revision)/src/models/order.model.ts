@@ -1,15 +1,15 @@
-export type OrderInput = {
-  size: "S" | "M" | "L"
+export type ordenInput = {
+  tamanio: "S" | "M" | "L"
   toppings: string[]
 }
 
-export type OrderStatus = "pending" | "preparing" | "delivered" | "cancelled"
+export type estadoOrden = "pendiente" | "preparado" | "entregado" | "cancelado"
 
-export type Order = {
+export type Orden = {
   id: string
-  items: OrderInput[]
-  address: string
-  status: OrderStatus
-  totalPrice: number
-  createdAt: Date
+  items: ordenInput[]
+  direccion: string
+  estado: estadoOrden
+  precioTotal: number
+  creadoEn: Date
 }

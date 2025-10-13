@@ -2,97 +2,97 @@ import type { Request, Response } from "express"
 import { z } from "zod"
 import { ordersService } from "../services/orders.service"
 
-const OrderItemSchema = z.object({
-  size: z.enum(["S", "M", "L"], {
-    errorMap: () => ({ message: "Size must be S, M, or L" }),
+const ordenItemSchema = z.object({
+  tamanio: z.enum(["S", "M", "L"], {
+    errorMap: () => ({ message: "Tamanio debe ser S, M, o L" }),
   }),
-  toppings: z.array(z.string()).max(5, "Maximum 5 toppings allowed"),
+  toppings: z.array(z.string()).max(5, "Maximo 5 toppings"),
 })
 
-const CreateOrderSchema = z.object({
-  items: z.array(OrderItemSchema).min(1, "Items array cannot be empty"),
-  address: z.string().min(10, "Address must be at least 10 characters"),
+const crearOrdenSchema = z.object({
+  items: z.array(ordenItemSchema).min(1, "Minimo 1 item"),
+  direccion: z.string().min(10, "Minimo 10 caracteres"),
 })
 
-const ListOrdersQuerySchema = z.object({
-  status: z.enum(["pending", "preparing", "delivered", "cancelled"]).optional(),
+const listarOrdenesSchema = z.object({
+  estado: z.enum(["pendiente", "preparado", "entregado", "cancelado"]).optional(),
 })
 
 export const ordersController = {
-  createOrder: (req: Request, res: Response) => {
+  crearPedido: (req: Request, res: Response) => {
     try {
-      const result = CreateOrderSchema.safeParse(req.body)
+      const resultado = crearOrdenSchema.safeParse(req.body)
 
-      if (!result.success) {
+      if (!resultado.success) {
         return res.status(422).json({
-          error: "Validation error",
-          details: result.error.errors,
+          error: "Error de validacion",
+          details: resultado.error.errors,
         })
       }
 
-      const { items, address } = result.data
-      const order = ordersService.create(items, address)
+      const { items, direccion } = resultado.data
+      const orden = ordersService.crear(items, direccion)
 
-      return res.status(201).json(order)
+      return res.status(201).json(orden)
     } catch (error) {
-      return res.status(500).json({ error: "Internal server error" })
+      return res.status(500).json({ error: "Error interno del servidor" })
     }
   },
 
-  getOrderById: (req: Request, res: Response) => {
+  getOrdenPorId: (req: Request, res: Response) => {
     try {
       const { id } = req.params
-      const order = ordersService.findById(id)
+      const orden = ordersService.buscarPorId(id)
 
-      if (!order) {
-        return res.status(404).json({ error: "Order not found" })
+      if (!orden) {
+        return res.status(404).json({ error: "Orden no econtrada" })
       }
 
-      return res.status(200).json(order)
+      return res.status(200).json(orden)
     } catch (error) {
-      return res.status(500).json({ error: "Internal server error" })
+      return res.status(500).json({ error: "Error interno del servidor" })
     }
   },
 
-  cancelOrder: (req: Request, res: Response) => {
+  cancelarOrden: (req: Request, res: Response) => {
     try {
       const { id } = req.params
 
-      const order = ordersService.cancel(id)
+      const orden = ordersService.cancelar(id)
 
-      if (!order) {
-        return res.status(404).json({ error: "Order not found" })
+      if (!orden) {
+        return res.status(404).json({ error: "Orden no encontrada" })
       }
 
       return res.status(200).json({
-        ...order,
-        message: "Order cancelled successfully",
+        ...orden,
+        message: "Orden cancelada exitosamente",
       })
     } catch (error) {
       if (error instanceof Error && error.message === "Cannot cancel delivered order") {
-        return res.status(409).json({ error: error.message })
+        return res.status(409).json({ error: "No se puede cancelar la orden" })
       }
-      return res.status(500).json({ error: "Internal server error" })
+      return res.status(500).json({ error: "Error interno del servidor" })
     }
   },
 
-  listOrders: (req: Request, res: Response) => {
+  listarOrdenes: (req: Request, res: Response) => {
     try {
-      const result = ListOrdersQuerySchema.safeParse(req.query)
+      const resultado = listarOrdenesSchema.safeParse(req.query)
 
-      if (!result.success) {
+      if (!resultado.success) {
         return res.status(422).json({
-          error: "Invalid query parameters",
-          details: result.error.errors,
+          error: "Error de validacion",
+          details: resultado.error.errors,
         })
       }
 
-      const { status } = result.data
-      const orders = ordersService.findAll(status)
+      const { estado } = resultado.data
+      const ordenes = ordersService.buscarTodos(estado)
 
-      return res.status(200).json(orders)
+      return res.status(200).json(ordenes)
     } catch (error) {
-      return res.status(500).json({ error: "Internal server error" })
+      return res.status(500).json({ error: "Error interno del servidor" })
     }
   },
 }

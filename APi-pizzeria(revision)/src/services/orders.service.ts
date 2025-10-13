@@ -1,78 +1,77 @@
-// Orders Service - Business Logic
-import type { OrderInput, Order, OrderStatus } from "../models/order.model"
+import type { ordenInput, Orden, estadoOrden } from "../models/order.model"
 
-let orders: Order[] = []
+let ordenes: Orden[] = []
 let nextId = 1
 
 export const ordersService = {
-  createOrder: (orderData: OrderInput) => {
+  crearPedido: (orderData: ordenInput) => {
     const basePrecios = {
       S: 10000,
       M: 14500,
       L: 18000,
     }
 
-    const base = basePrecios[orderData.size]
+    const base = basePrecios[orderData.tamanio]
     const precio = base + orderData.toppings.length * 1500
 
     return {
-      size: orderData.size,
+      tamanio: orderData.tamanio,
       toppings: orderData.toppings,
-      status: "pending" as OrderStatus,
+      estado: "pendiente" as estadoOrden,
       precio,
     }
   },
 
-  create: (items: OrderInput[], address: string): Order => {
+  crear: (items: ordenInput[], direccion: string): Orden => {
     const id = `order-${nextId++}`
 
-    let totalPrice = 0
+    let precioTotal = 0
     for (const item of items) {
-      const result = ordersService.createOrder(item)
-      totalPrice += result.precio
+      const result = ordersService.crearPedido(item)
+      precioTotal += result.precio
     }
 
-    const order: Order = {
+    const order: Orden = {
       id,
       items,
-      address,
-      status: "pending",
-      totalPrice,
-      createdAt: new Date(),
+      direccion,
+      estado: "pendiente",
+      precioTotal,
+      creadoEn: new Date(),
     }
 
-    orders.push(order)
+    ordenes.push(order)
     return order
   },
 
-  findById: (id: string): Order | null => {
-    return orders.find((order) => order.id === id) || null
+  buscarPorId: (id: string): Orden | null => {
+    return ordenes.find((order) => order.id === id) || null
   },
 
-  findAll: (status?: OrderStatus): Order[] => {
-    if (status) {
-      return orders.filter((order) => order.status === status)
+  buscarTodos: (estado?: estadoOrden): Orden[] => {
+    if (estado) {
+      return ordenes.filter((order) => order.estado === estado)
     }
-    return orders
+    return ordenes
   },
 
-  cancel: (id: string): Order | null => {
-    const order = ordersService.findById(id)
+  cancelar: (id: string): Orden | null => {
+    const order = ordersService.buscarPorId(id)
 
     if (!order) {
       return null
     }
 
-    if (order.status === "delivered") {
-      throw new Error("Cannot cancel delivered order")
+    if (order.estado === "entregado") {
+      throw new Error("No se puede cancelar la orden")
     }
 
-    order.status = "cancelled"
+    order.estado = "cancelado"
     return order
   },
 
   clearAll: () => {
-    orders = []
+    ordenes = []
     nextId = 1
   },
 }

@@ -11,96 +11,96 @@ describe("orders routes", () => {
 
   describe("POST /", () => {
     test("debería crear un pedido válido y retornar 201", async () => {
-      const response = await request(app)
+      const respuesta = await request(app)
         .post("/")
         .send({
-          items: [{ size: "M", toppings: ["queso", "jamón"] }],
-          address: "Calle Falsa 123, Springfield",
+          items: [{ tamanio: "M", toppings: ["queso", "jamón"] }],
+          direccion: "Calle Falsa 123, Springfield",
         })
 
-      expect(response.status).toBe(201)
-      expect(response.body).toHaveProperty("id")
-      expect(response.body).toHaveProperty("totalPrice")
-      expect(response.body.status).toBe("pending")
+      expect(respuesta.status).toBe(201)
+      expect(respuesta.body).toHaveProperty("id")
+      expect(respuesta.body).toHaveProperty("totalPrice")
+      expect(respuesta.body.status).toBe("pending")
     })
 
     test("debería rechazar pedido con items vacío (422)", async () => {
-      const response = await request(app).post("/").send({
+      const respuesta = await request(app).post("/").send({
         items: [],
-        address: "Calle Falsa 123",
+        direccion: "Calle Falsa 123",
       })
 
-      expect(response.status).toBe(422)
+      expect(respuesta.status).toBe(422)
     })
 
     test("debería rechazar pedido con address muy corto (422)", async () => {
-      const response = await request(app)
+      const respuesta = await request(app)
         .post("/")
         .send({
-          items: [{ size: "M", toppings: ["queso"] }],
-          address: "abc",
+          items: [{ tamanio: "M", toppings: ["queso"] }],
+          direccion: "abc",
         })
 
-      expect(response.status).toBe(422)
+      expect(respuesta.status).toBe(422)
     })
   })
 
   describe("GET /:id", () => {
     test("debería retornar un pedido existente (200)", async () => {
-      const order = ordersService.create([{ size: "M", toppings: ["queso"] }], "Calle Falsa 123")
-      const response = await request(app).get(`/${order.id}`)
-      expect(response.status).toBe(200)
-      expect(response.body.id).toBe(order.id)
+      const orden = ordersService.crear([{ tamanio: "M", toppings: ["queso"] }], "Calle Falsa 123")
+      const respuesta = await request(app).get(`/${orden.id}`)
+      expect(respuesta.status).toBe(200)
+      expect(respuesta.body.id).toBe(orden.id)
     })
 
     test("debería retornar 404 si el pedido no existe", async () => {
-      const response = await request(app).get("/:id")
-      expect(response.status).toBe(404)
+      const respuesta = await request(app).get("/:id")
+      expect(respuesta.status).toBe(404)
     })
   })
 
   describe("POST /:id/cancel", () => {
     test("debería cancelar un pedido pendiente (200)", async () => {
-      const order = ordersService.create([{ size: "M", toppings: ["queso"] }], "Calle Falsa 123")
+      const orden = ordersService.crear([{ tamanio: "M", toppings: ["queso"] }], "Calle Falsa 123")
 
-      const response = await request(app).post(`/${order.id}/cancel`)
+      const respuesta = await request(app).post(`/${orden.id}/cancel`)
 
-      expect(response.status).toBe(200)
-      expect(response.body.status).toBe("cancelled")
+      expect(respuesta.status).toBe(200)
+      expect(respuesta.body.estado).toBe("cancelado")
     })
 
     test("debería rechazar cancelar pedido entregado (409)", async () => {
-      const order = ordersService.create([{ size: "M", toppings: ["queso"] }], "Calle Falsa 123")
-      order.status = "delivered"
+      const orden = ordersService.crear([{ tamanio: "M", toppings: ["queso"] }], "Calle Falsa 123")
+      orden.estado = "entregado"
 
-      const response = await request(app).post(`/${order.id}/cancel`)
+      const respuesta = await request(app).post(`/${orden.id}/cancel`)
 
-      expect(response.status).toBe(409)
+      expect(respuesta.status).toBe(409)
     })
   })
 
   describe("GET /", () => {
     test("debería listar todos los pedidos", async () => {
-      ordersService.create([{ size: "M", toppings: ["queso"] }], "Direccion 1")
-      ordersService.create([{ size: "L", toppings: ["jamón"] }], "Direccion 2")
+      ordersService.crear([{ tamanio: "M", toppings: ["queso"] }], "Direccion 1")
+      ordersService.crear([{ tamanio: "L", toppings: ["jamón"] }], "Direccion 2")
 
-      const response = await request(app).get("/")
+      const respuesta = await request(app).get("/")
 
-      expect(response.status).toBe(200)
-      expect(Array.isArray(response.body)).toBe(true)
-      expect(response.body.length).toBe(2)
+      expect(respuesta.status).toBe(200)
+      expect(Array.isArray(respuesta.body)).toBe(true)
+      expect(respuesta.body.length).toBe(2)
     })
 
     test("debería filtrar pedidos por status", async () => {
-      const order1 = ordersService.create([{ size: "M", toppings: ["queso"] }], "Direccion 1")
-      const order2 = ordersService.create([{ size: "L", toppings: ["jamón"] }], "Direccion 2")
-      order2.status = "delivered"
+      const orden1 = ordersService.crear([{ tamanio: "M", toppings: ["queso"] }], "Direccion 1")
+      const orden2 = ordersService.crear([{ tamanio: "L", toppings: ["jamón"] }], "Direccion 2")
+      orden2.estado = "entregado"
 
-      const response = await request(app).get("/?status=pending")
+      const respuesta = await request(app).get("/?estado=pending")
 
-      expect(response.status).toBe(200)
-      expect(response.body.length).toBe(1)
-      expect(response.body[0].status).toBe("pending")
+      expect(respuesta.status).toBe(200)
+      expect(respuesta.body.length).toBe(1)
+      expect(respuesta.body[0].estado).toBe("pendiente")
     })
   })
 })
