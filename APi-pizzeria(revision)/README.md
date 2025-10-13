@@ -118,6 +118,27 @@ Filtrar por estado (200):
 curl "http://localhost:3000/?status=pending"
 ```
 
+# Matriz de Casos de Prueba
+| **ID | **Caso/Descripcion** | **Precondicion** | **Input** | **Accion** | **Resultado esperado** | **Test** |
+|--------------|----------------|------------------|------------|-------------|--------------------------|-----------|
+| **CA1** | Crear pedido valido | Servidor iniciado | `{ "items": [{"size": "M", "toppings": ["queso", "jamon"]}], "address": "Yrigoyen 585, Bahia Blanca" }` | Enviar POST `/` | Pedido creado con `status: "pending"`, `id`, y `totalPrice=17500` | verde |
+| **CA2** | Crear pedido con lista de items vacia | Servidor iniciado | `{ "items": [], "address": "Yrigoyen 585" }` | Enviar POST `/` | Error de validacion “items no puede estar vacio” | verde |
+| **CA3** | Crear pedido con direccion corta | Servidor iniciado | `{ "items": [{"size":"S","toppings":["queso"]}], "address":"Yri 585"}` | Enviar POST `/` | Error de validacion “address debe tener minimo 10 caracteres” | verde |
+| **CA4** | Crear pedido con size invalido | Servidor iniciado | `{ "items":[{"size":"XL","toppings":["queso"]}], "address":"Yrigoyen 585, Bahia Blanca"}` | Enviar POST `/` | Error “size invalido, debe ser S, M o L” | verde |
+| **CA5** | Crear pedido con mas de 5 toppings | Servidor iniciado | `{ "items":[{"size":"M","toppings":["queso","jamon","morron","aceitunas","huevo","cebolla"]}], "address":"Yrigoyen 585, Bahia Blanca"}` | Enviar POST `/` | Error “maximo 5 toppings permitidos” | verde |
+| **CA6** | Obtener pedido existente | Pedido creado previamente con id=order-1 | `GET /order-1` | Enviar GET `/order-1` | Devuelve pedido con informacion completa | verde |
+| **CA7** | Obtener pedido inexistente | No existe pedido con id=order-999 | `GET /order-999` | Enviar GET `/order-999` | Error “Pedido no encontrado” | verde |
+| **CA8** | Cancelar pedido pendiente | Pedido con `status=pending` existente | `POST /order-1/cancel` | Enviar POST `/order-1/cancel` | Pedido actualizado a `status=cancelled` | verde |
+| **CA9** | Cancelar pedido entregado | Pedido con `status=delivered` existente | `POST /order-2/cancel` | Enviar POST `/order-2/cancel` | Error de negocio “No se puede cancelar pedido entregado” | verde |
+| **CA10** | Cancelar pedido inexistente | No existe pedido con id=order-999 | `POST /order-999/cancel` | Enviar POST `/order-999/cancel` | Error “Pedido no encontrado” | verde |
+| **CA11** | Listar todos los pedidos | Base con pedidos creados | `GET /` | Enviar GET `/` | Devuelve arreglo de todos los pedidos | verde |
+| **CA12** | Filtrar pedidos por estado valido | Base con pedidos de distintos estados | `GET /?status=pending` | Enviar GET `/` con query `status=pending` | Devuelve solo pedidos pendientes | verde |
+| **CA13** | Filtrar pedidos por estado invalido | Servidor iniciado | `GET /?status=foo` | Enviar GET `/?status=foo` | Error “status invalido” | verde |
+| **CA14** | Calcular precio correctamente | Servidor iniciado | `{ "items": [{"size": "L", "toppings": ["queso","jamon","morron"]}], "address": "Yrigoyen 585"}` | Enviar POST `/` | Retorna totalPrice = `18000 + (3×1500) = 22500` | verde |
+| **CA15** | Validacion: toppings no es array | Servidor iniciado | `{ "items": [{"size":"S","toppings":"queso"}], "address":"Yrigoyen 585"}` | Enviar POST `/` | Error “toppings debe ser un array de strings” | verde |
+| **CA16** | Validacion: body vacio | Servidor iniciado | `{}` | Enviar POST `/` | Error por falta de campos requeridos (`items`, `address`) | verde |
+
+
 ## Ejecutar
 Desarrollo:
 ```bash
@@ -136,3 +157,4 @@ npm test
 npm run test:coverage
 ```
 Umbral global configurado en `jest.config.js` (80% líneas/funciones/branches/statements).
+
