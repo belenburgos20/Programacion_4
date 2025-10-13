@@ -19,7 +19,7 @@ describe("ordersService", () => {
     expect(resultado.tamanio).toBe("M")
   })
 
-  test("deberia calcular el precio correctamente según size y toppings", () => {
+  test("deberia calcular el precio correctamente según tamaño y toppings", () => {
     const pedidoS: ordenInput = { tamanio: "S", toppings: ["queso"] }
     const pedidoM: ordenInput = { tamanio: "M", toppings: ["queso", "jamon"] }
     const pedidoL: ordenInput = { tamanio: "L", toppings: ["queso", "jamon", "tomate"] }
@@ -39,10 +39,9 @@ describe("ordersService", () => {
 
   test("deberia permitir cancelar un pedido pendiente", () => {
     const orden = ordersService.crear([{ tamanio: "M", toppings: ["queso"] }], "Calle Falsa 123")
-
-    const cancelled = ordersService.cancelar(orden.id)
-
-    expect(cancelled).not.toBeNull()
-    expect(cancelled?.estado).toBe("cancelado")
+    expect(orden.estado).toBe("pendiente")
+    const cancelado = ordersService.cancelar(orden.id)
+    expect(cancelado).not.toBeNull()
+    expect(cancelado?.estado).toBe("cancelado")
   })
 })
