@@ -9,10 +9,10 @@ describe("orders routes", () => {
     ordersService.clearAll()
   })
 
-  describe("POST /orders", () => {
+  describe("POST /", () => {
     test("debería crear un pedido válido y retornar 201", async () => {
       const response = await request(app)
-        .post("/orders")
+        .post("/")
         .send({
           items: [{ size: "M", toppings: ["queso", "jamón"] }],
           address: "Calle Falsa 123, Springfield",
@@ -25,7 +25,7 @@ describe("orders routes", () => {
     })
 
     test("debería rechazar pedido con items vacío (422)", async () => {
-      const response = await request(app).post("/orders").send({
+      const response = await request(app).post("/").send({
         items: [],
         address: "Calle Falsa 123",
       })
@@ -35,7 +35,7 @@ describe("orders routes", () => {
 
     test("debería rechazar pedido con address muy corto (422)", async () => {
       const response = await request(app)
-        .post("/orders")
+        .post("/")
         .send({
           items: [{ size: "M", toppings: ["queso"] }],
           address: "abc",
@@ -45,29 +45,25 @@ describe("orders routes", () => {
     })
   })
 
-  describe("GET /orders/:id", () => {
+  describe("GET /:id", () => {
     test("debería retornar un pedido existente (200)", async () => {
-      // Crear un pedido primero
       const order = ordersService.create([{ size: "M", toppings: ["queso"] }], "Calle Falsa 123")
-
-      const response = await request(app).get(`/orders/${order.id}`)
-
+      const response = await request(app).get(`/${order.id}`)
       expect(response.status).toBe(200)
       expect(response.body.id).toBe(order.id)
     })
 
     test("debería retornar 404 si el pedido no existe", async () => {
-      const response = await request(app).get("/orders/inexistente")
-
+      const response = await request(app).get("/:id")
       expect(response.status).toBe(404)
     })
   })
 
-  describe("POST /orders/:id/cancel", () => {
+  describe("POST /:id/cancel", () => {
     test("debería cancelar un pedido pendiente (200)", async () => {
       const order = ordersService.create([{ size: "M", toppings: ["queso"] }], "Calle Falsa 123")
 
-      const response = await request(app).post(`/orders/${order.id}/cancel`)
+      const response = await request(app).post(`/${order.id}/cancel`)
 
       expect(response.status).toBe(200)
       expect(response.body.status).toBe("cancelled")
@@ -77,18 +73,18 @@ describe("orders routes", () => {
       const order = ordersService.create([{ size: "M", toppings: ["queso"] }], "Calle Falsa 123")
       order.status = "delivered"
 
-      const response = await request(app).post(`/orders/${order.id}/cancel`)
+      const response = await request(app).post(`/${order.id}/cancel`)
 
       expect(response.status).toBe(409)
     })
   })
 
-  describe("GET /orders", () => {
+  describe("GET /", () => {
     test("debería listar todos los pedidos", async () => {
-      ordersService.create([{ size: "M", toppings: ["queso"] }], "Address 1")
-      ordersService.create([{ size: "L", toppings: ["jamón"] }], "Address 2")
+      ordersService.create([{ size: "M", toppings: ["queso"] }], "Direccion 1")
+      ordersService.create([{ size: "L", toppings: ["jamón"] }], "Direccion 2")
 
-      const response = await request(app).get("/orders")
+      const response = await request(app).get("/")
 
       expect(response.status).toBe(200)
       expect(Array.isArray(response.body)).toBe(true)
@@ -96,11 +92,11 @@ describe("orders routes", () => {
     })
 
     test("debería filtrar pedidos por status", async () => {
-      const order1 = ordersService.create([{ size: "M", toppings: ["queso"] }], "Address 1")
-      const order2 = ordersService.create([{ size: "L", toppings: ["jamón"] }], "Address 2")
+      const order1 = ordersService.create([{ size: "M", toppings: ["queso"] }], "Direccion 1")
+      const order2 = ordersService.create([{ size: "L", toppings: ["jamón"] }], "Direccion 2")
       order2.status = "delivered"
 
-      const response = await request(app).get("/orders?status=pending")
+      const response = await request(app).get("/?status=pending")
 
       expect(response.status).toBe(200)
       expect(response.body.length).toBe(1)

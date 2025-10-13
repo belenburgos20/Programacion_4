@@ -5,7 +5,7 @@ export function makeApp() {
   const app = express()
   app.use(express.json())
 
-  app.use("/orders", ordersRouter)
+  app.use("/", ordersRouter)
 
   return app
 }

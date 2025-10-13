@@ -3,7 +3,7 @@
 Proyecto mini‑proyecto (punto 5): API REST con Express + TypeScript, validaciones con Zod, TDD con Jest (tests unitarios e integracion).
 
 ## Requisitos
-- Node.js 18+
+- Node.js 18+ 
 - npm 9+
 
 ## Instalación
@@ -24,7 +24,7 @@ Base URL: `http://localhost:3000`
 
 1) Crear pedido
 - Method: POST
-- URL: `/orders`
+- URL: `/`
 - Body:
 ```json
 {
@@ -40,14 +40,14 @@ Base URL: `http://localhost:3000`
 
 2) Obtener pedido por id
 - Method: GET
-- URL: `/orders/:id`
+- URL: `/:id`
 - Respuestas:
   - 200 OK: retorna el pedido
   - 404 Not Found: si no existe
 
 3) Cancelar pedido
 - Method: POST
-- URL: `/orders/:id/cancel`
+- URL: `/:id/cancel`
 - Reglas: no se puede cancelar si `status = delivered`
 - Respuestas:
   - 200 OK: retorna el pedido con `status = cancelled`
@@ -56,7 +56,7 @@ Base URL: `http://localhost:3000`
 
 4) Listar pedidos
 - Method: GET
-- URL: `/orders?status=<pending|preparing|delivered|cancelled>`
+- URL: `/?status=<pending|preparing|delivered|cancelled>`
 - Respuestas:
   - 200 OK: array de pedidos
   - 422 Unprocessable Entity: si `status` invalido
@@ -79,7 +79,7 @@ Base URL: `http://localhost:3000`
 
 Crear pedido (201):
 ```bash
-curl -X POST http://localhost:3000/orders \
+curl -X POST http://localhost:3000/ \
   -H "Content-Type: application/json" \
   -d '{
     "items": [{"size": "M", "toppings": ["queso", "jamón"]}],
@@ -89,7 +89,7 @@ curl -X POST http://localhost:3000/orders \
 
 Crear invalido (422 por items vacío):
 ```bash
-curl -X POST http://localhost:3000/orders \
+curl -X POST http://localhost:3000/ \
   -H "Content-Type: application/json" \
   -d '{
     "items": [],
@@ -100,22 +100,22 @@ curl -X POST http://localhost:3000/orders \
 Obtener por id (200/404):
 ```bash
 # suponiendo id=order-1
-curl http://localhost:3000/orders/order-1
+curl http://localhost:3000/order-1
 ```
 
 Cancelar pedido (200/409/404):
 ```bash
-curl -X POST http://localhost:3000/orders/order-1/cancel
+curl -X POST http://localhost:3000/order-1/cancel
 ```
 
 Listar todos (200):
 ```bash
-curl http://localhost:3000/orders
+curl http://localhost:3000/
 ```
 
 Filtrar por estado (200):
 ```bash
-curl "http://localhost:3000/orders?status=pending"
+curl "http://localhost:3000/?status=pending"
 ```
 
 ## Ejecutar
