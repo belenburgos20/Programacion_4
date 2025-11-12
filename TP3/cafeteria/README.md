@@ -1,73 +1,126 @@
-# React + TypeScript + Vite
+# TP3 - Cafeteria (TDD con React + Vitest + MSW)
+---
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Objetivo Central
+Aplicar Desarrollo Guiado por Pruebas (TDD) en React para construir una pequeña
+aplicación que simule el flujo de pedidos en una cafetería. El estudiante deberá
+demostrar dominio del ciclo Rojo → Verde → Refactor , el uso de React Testing Library
+(RTL) con consultas accesibles, el manejo de estado y la integración con una API
+simulada mediante MSW .
+---
 
-Currently, two official plugins are available:
+## Stack Tecnológico
+● React + TypeScript + Vite
+● Vitest + React Testing Library + @testing-library/user-event
+● MSW (Mock Service Worker)
+● Zod para validaciones
+● Context API o hooks personalizados para el estado global
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Contexto del Proyecto
+Una cafetería desea digitalizar el proceso de toma de pedidos. El sistema mostrará un
+menú de productos , permitirá agregar ítems a un pedido , visualizar el total a pagar , y
+enviar el pedido (simulado). El objetivo del trabajo es implementar progresivamente
+cada funcionalidad siguiendo la metodología TDD , escribiendo primero los tests y
+luego la mínima implementación que los haga pasar.
+---
 
-## React Compiler
+## Configuracion del entorno
+-
+-
+-
+-
+-
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## TDD - Casos HU1, HU2, HU3, HU4, HU5, HU6.
+---
+HU1 - Visualizacion inicial del menu
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+*Test rojo* - test que verifique que se muestran productos mockeados por la API (
+screen.getByText('Café') ).
+(captura)
+---
+*Test verde* - implementar fetch a /api/menu (interceptado por MSW).
+(captura)
+---
+*Refactor* - separar el componente <Menu /> .
+(captura)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
+HU2 - Agregar ítem al pedido
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+*Test* - simular click sobre el botón “Agregar” de un producto.
+(captura)
+---
+*Verificacion* - Aparece en el área de pedido ( getByRole('list') ).
+(captura)
+---
+*Implementacion* - Estado local o contexto ( useOrder ).
+(captura)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
+HU3 - Calcular total del pedido
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+*Test* - agregar varios productos y verificar el texto "Total: $..." .
+(captura)
+---
+*Implementacion* - Implementar cálculo dinámico.
+(captura)
+---
+*Verificacion* -  Validar con expect(screen.getByText(/total:
+\$\d+/i)).toBeInTheDocument() .
+(captura)
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
+HU4 - Eliminar ítem del pedido
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+*Test* - verificar que el clic en “Eliminar” remueve solo ese producto.
+(captura)
+---
+*Implementacion* - Implementar e.stopPropagation() si se anidan botones.
+(captura)
+---
+*Usar* - setState funcional.
+(captura)
+
+---
+HU5 -  Enviar pedido (MSW + Contexto) - Mockear endpoint /api/orders con MSW .
+
+*Test*
+1. Agregar varios ítems.
+2. Click en “Enviar pedido”.
+3. Esperar await waitFor(...) que muestre mensaje “Pedido confirmado”.
+
+(captura)
+
+---
+*Implementacion* - Implementar envío y limpiar estado tras éxito.
+(captura)
+
+---
+HU6 -  Caso límite: error o menú vacío
+
+*Test* -  Usar server.use() para simular un error 500 o lista vacía.
+
+(captura)
+---
+*Implementacion* - Verificar que la app muestre “No hay productos disponibles” o “Error al cargar
+menú”
+(captura)
+
+---
+
+## Integracion completa
+
+
+
+## Como ejecutar el proyeco
+- git clone 
+- cd TP3/cafeteria
+- npm install
+- npm run dev
+---
+## Ejecutar tests
+- npx vitest
