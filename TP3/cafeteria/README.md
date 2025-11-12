@@ -41,10 +41,10 @@ HU1 - Visualizacion inicial del menu
 - *Test rojo* - test que verifique que se muestran productos mockeados por la API (
 screen.getByText('Café') ).
 (captura)
----
+
 - *Test verde* - implementar fetch a /api/menu (interceptado por MSW).
 (captura)
----
+
 - *Refactor* - separar el componente <Menu /> .
 (captura)
 
@@ -53,10 +53,10 @@ HU2 - Agregar ítem al pedido
 
 - *Test* - simular click sobre el botón “Agregar” de un producto.
 (captura)
----
+
 - *Verificacion* - Aparece en el área de pedido ( getByRole('list') ).
 (captura)
----
+
 - *Implementacion* - Estado local o contexto ( useOrder ).
 (captura)
 
@@ -65,10 +65,10 @@ HU3 - Calcular total del pedido
 
 - *Test* - agregar varios productos y verificar el texto "Total: $..." .
 (captura)
----
+
 - *Implementacion* - Implementar cálculo dinámico.
 (captura)
----
+
 - *Verificacion* -  Validar con expect(screen.getByText(/total:
 \$\d+/i)).toBeInTheDocument() .
 (captura)
@@ -78,10 +78,10 @@ HU4 - Eliminar ítem del pedido
 
 - *Test* - verificar que el clic en “Eliminar” remueve solo ese producto.
 (captura)
----
+
 - *Implementacion* - Implementar e.stopPropagation() si se anidan botones.
 (captura)
----
+
 - *Usar* - setState funcional.
 (captura)
 
@@ -95,7 +95,7 @@ HU5 -  Enviar pedido (MSW + Contexto) - Mockear endpoint /api/orders con MSW .
 
 (captura)
 
----
+
 *Implementacion* - Implementar envío y limpiar estado tras éxito.
 (captura)
 
@@ -104,7 +104,7 @@ HU6 -  Caso límite: error o menú vacío
 
 - *Test* -  Usar server.use() para simular un error 500 o lista vacía.
 (captura)
----
+
 - *Implementacion* - Verificar que la app muestre “No hay productos disponibles” o “Error al cargar
 menú”
 (captura)
