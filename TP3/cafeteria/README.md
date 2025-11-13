@@ -26,11 +26,17 @@ luego la mínima implementación que los haga pasar.
 ---
 
 ## Configuracion del entorno
--
--
--
--
--
+1. Crear proyecto base
+   -  npm create vite@latest cafeteria -- --template react-ts
+2. Intalar dependencias
+   - npm install vitest @testing-library/react @testing-library/jest-dom @testing-library/user-event msw zod
+3. Configurar Vitest en vitest.config.ts
+   - test: {
+  globals: true,
+  environment: 'jsdom',
+  setupFiles: './src/setupTests.ts',
+},
+4. Crear src/setupTests.ts para registrar MSW y jest-dom.
 
 ---
 
@@ -40,50 +46,46 @@ HU1 - Visualizacion inicial del menu
 
 - *Test rojo* - test que verifique que se muestran productos mockeados por la API (
 screen.getByText('Café') ).
-(captura)
+![alt text](imagenes/hu1-rojo.png)
 
 - *Test verde* - implementar fetch a /api/menu (interceptado por MSW).
-(captura)
+![alt text](imagenes/hu1-verde.png)
 
 - *Refactor* - separar el componente <Menu /> .
-(captura)
+![alt text](imagenes/hu1-refactor.png)
 
 ---
 HU2 - Agregar ítem al pedido
 
 - *Test* - simular click sobre el botón “Agregar” de un producto.
-(captura)
+- ![alt text](imagenes/hu2-rojo.png)
 
 - *Verificacion* - Aparece en el área de pedido ( getByRole('list') ).
-(captura)
-
 - *Implementacion* - Estado local o contexto ( useOrder ).
-(captura)
+- ![alt text](imagenes/hu2-verde.png)
+
 
 ---
 HU3 - Calcular total del pedido
 
 - *Test* - agregar varios productos y verificar el texto "Total: $..." .
-(captura)
+- ![alt text](imagenes/hu3-rojo.png)
 
 - *Implementacion* - Implementar cálculo dinámico.
-(captura)
-
 - *Verificacion* -  Validar con expect(screen.getByText(/total:
 \$\d+/i)).toBeInTheDocument() .
-(captura)
+- ![alt text](imagenes/hu3-verde.png)
+
 
 ---
 HU4 - Eliminar ítem del pedido
 
 - *Test* - verificar que el clic en “Eliminar” remueve solo ese producto.
-(captura)
+- ![alt text](imagenes/hu4-rojo.png)
 
 - *Implementacion* - Implementar e.stopPropagation() si se anidan botones.
-(captura)
-
 - *Usar* - setState funcional.
-(captura)
+- ![alt text](imagenes/hu4-verde.png)
 
 ---
 HU5 -  Enviar pedido (MSW + Contexto) - Mockear endpoint /api/orders con MSW .
@@ -92,34 +94,40 @@ HU5 -  Enviar pedido (MSW + Contexto) - Mockear endpoint /api/orders con MSW .
 1. Agregar varios ítems.
 2. Click en “Enviar pedido”.
 3. Esperar await waitFor(...) que muestre mensaje “Pedido confirmado”.
-
-(captura)
-
+- ![alt text](imagenes/hu5-rojo.png)
 
 *Implementacion* - Implementar envío y limpiar estado tras éxito.
-(captura)
+- ![alt text](imagenes/hu5-verde.png)
 
 ---
 HU6 -  Caso límite: error o menú vacío
 
 - *Test* -  Usar server.use() para simular un error 500 o lista vacía.
-(captura)
-
+- ![alt text](imagenes/hu6-rojo-menu.png)
+- ![alt text](imagenes/hu6-rojo-productos.png) 
+  
 - *Implementacion* - Verificar que la app muestre “No hay productos disponibles” o “Error al cargar
 menú”
-(captura)
-
+- ![alt text](imagenes/hu6-verde.png)
+- 
 ---
 
 ## Integracion completa
+1- Cargar menú (mock).
+2- Agregar ítems.
+3- Calcular total.
+4- Enviar pedido (mock POST).
+5-Resetear interfaz.
 
+- ![alt text](imagenes/test-integracion.png)
 
 
 ## Como ejecutar el proyeco
-- git clone 
+- git clone https://github.com/belenburgos20/Programacion_4
 - cd TP3/cafeteria
 - npm install
 - npm run dev
+  
 ---
 ## Ejecutar tests
-- npx vitest
+- npx vitest run

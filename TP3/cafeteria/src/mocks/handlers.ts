@@ -9,6 +9,9 @@ export const handlers = [
   }),
 
   http.post("/api/orders", async () => {
-    return HttpResponse.json({ message: "Pedido confirmado" }, { status: 201 });
+    return HttpResponse.json(
+      { message: "Pedido enviado correctamente" },
+      { status: 201 }
+    );
   }),
 ];
