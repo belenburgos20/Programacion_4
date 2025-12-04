@@ -43,22 +43,22 @@ const verifyCaptcha = (req, res) => {
   const captchaData = captchaStore[captchaId]
 
   if (!captchaData) {
-    return res.json({ valid: false, error: "Invalid captcha ID" })
+    return res.json({ valid: false, error: "CHAPTCHA no encontrado" })
   }
 
   if (Date.now() - captchaData.createdAt > 5 * 60 * 1000) {
     delete captchaStore[captchaId]
-    return res.json({ valid: false, error: "CAPTCHA expired" })
+    return res.json({ valid: false, error: "CAPTCHA expirado" })
   }
 
   if (captchaData.used) {
-    return res.json({ valid: false, error: "CAPTCHA already used" })
+    return res.json({ valid: false, error: "CAPTCHA ya utilizado" })
   }
 
   captchaData.attempts++
 
   if (captchaData.attempts > 3) {
-    return res.json({ valid: false, error: "Too many attempts" })
+    return res.json({ valid: false, error: "demasiados intentos" })
   }
 
   if (captchaData.text === captchaText.toLowerCase()) {

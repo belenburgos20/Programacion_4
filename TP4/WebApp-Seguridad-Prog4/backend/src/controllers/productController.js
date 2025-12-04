@@ -4,11 +4,11 @@ const getProducts = (req, res) => {
   const { category, search } = req.query
 
   if (category && !/^[a-zA-Z0-9\s]+$/.test(category)) {
-    return res.status(400).json({ error: "Invalid category format" })
+    return res.status(400).json({ error: "formato invalido" })
   }
 
   if (search && !/^[a-zA-Z0-9\s]+$/.test(search)) {
-    return res.status(400).json({ error: "Invalid search format" })
+    return res.status(400).json({ error: "formato invalido" })
   }
 
   let query = "SELECT * FROM products WHERE 1=1"
