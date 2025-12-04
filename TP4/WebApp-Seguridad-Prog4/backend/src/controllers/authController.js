@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const { db } = require("../config/database")
 const crypto = require("crypto")
+const { recordFailedAttempt, clearFailedAttempts } = require("../middleware/bruteForceProtection")
 
 const loginAttempts = new Map()
 const captchaRequired = new Map()
@@ -14,18 +15,7 @@ const addDelay = (attempts) => {
 }
 
 const login = async (req, res) => {
-  const { username, password, captchaToken } = req.body
-  const clientIp = req.ip
-
-  const attempts = loginAttempts.get(clientIp) || 0
-
-  if (attempts >= 3 && !captchaToken) {
-    return res.status(400).json({ error: "captcha required" })
-  }
-
-  if (attempts > 0) {
-    await addDelay(attempts)
-  }
+  const { username, password } = req.body
 
   const query = `SELECT * FROM users WHERE username = ?`
 
@@ -35,26 +25,18 @@ const login = async (req, res) => {
     }
 
     if (results.length === 0) {
-      loginAttempts.set(clientIp, attempts + 1)
-      if (attempts + 1 >= 3) {
-        captchaRequired.set(clientIp, true)
-      }
+      recordFailedAttempt(req)
       return res.status(401).json({ error: "Credenciales inválidas" })
     }
 
     const user = results[0]
     const isValidPassword = await bcrypt.compare(password, user.password)
-
+    
     if (!isValidPassword) {
-      loginAttempts.set(clientIp, attempts + 1)
-      if (attempts + 1 >= 3) {
-        captchaRequired.set(clientIp, true)
-      }
+      recordFailedAttempt(req)
       return res.status(401).json({ error: "Credenciales inválidas" })
     }
-
-    loginAttempts.delete(clientIp)
-    captchaRequired.delete(clientIp)
+    clearFailedAttempts(req)
 
     const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET || "supersecret123")
 

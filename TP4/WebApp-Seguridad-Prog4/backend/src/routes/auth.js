@@ -2,6 +2,7 @@ const express = require("express")
 const router = express.Router()
 const authController = require("../controllers/authController")
 const rateLimit = require("express-rate-limit")
+const { bruteForceProtection } = require("../middleware/bruteForceProtection");
 
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -21,7 +22,7 @@ const checkUsernameLimiter = rateLimit({
 })
 
 // Rutas de autenticación
-router.post("/login", loginLimiter, authController.login)
+router.post("/login",bruteForceProtection, loginLimiter, authController.login)
 router.post("/register", authController.register)
 router.post("/auth/verify", authController.verifyToken)
 router.post("/check-username", checkUsernameLimiter, authController.checkUsername)
