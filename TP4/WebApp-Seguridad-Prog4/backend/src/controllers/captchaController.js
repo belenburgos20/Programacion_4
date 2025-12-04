@@ -1,7 +1,6 @@
 const svgCaptcha = require("svg-captcha")
 const crypto = require("crypto")
 
-// Store para captchas with enhanced security
 const captchaStore = {}
 
 setInterval(() => {
@@ -43,22 +42,22 @@ const verifyCaptcha = (req, res) => {
   const captchaData = captchaStore[captchaId]
 
   if (!captchaData) {
-    return res.json({ valid: false, error: "CHAPTCHA no encontrado" })
+    return res.json({ valid: false, error: "Invalid captcha ID" })
   }
 
   if (Date.now() - captchaData.createdAt > 5 * 60 * 1000) {
     delete captchaStore[captchaId]
-    return res.json({ valid: false, error: "CAPTCHA expirado" })
+    return res.json({ valid: false, error: "CAPTCHA expired" })
   }
 
   if (captchaData.used) {
-    return res.json({ valid: false, error: "CAPTCHA ya utilizado" })
+    return res.json({ valid: false, error: "CAPTCHA already used" })
   }
 
   captchaData.attempts++
 
   if (captchaData.attempts > 3) {
-    return res.json({ valid: false, error: "demasiados intentos" })
+    return res.json({ valid: false, error: "Too many attempts" })
   }
 
   if (captchaData.text === captchaText.toLowerCase()) {

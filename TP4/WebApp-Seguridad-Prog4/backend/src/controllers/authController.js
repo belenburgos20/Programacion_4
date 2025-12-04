@@ -9,7 +9,7 @@ const captchaRequired = new Map()
 
 const addDelay = (attempts) => {
   return new Promise((resolve) => {
-    const delayMs = Math.min(Math.pow(2, attempts - 1) * 1000, 8000)
+    const delayMs = Math.min(Math.pow(2, attempts) * 1000, 8000)
     setTimeout(resolve, delayMs)
   })
 }
@@ -31,11 +31,12 @@ const login = async (req, res) => {
 
     const user = results[0]
     const isValidPassword = await bcrypt.compare(password, user.password)
-    
+
     if (!isValidPassword) {
       recordFailedAttempt(req)
       return res.status(401).json({ error: "Credenciales inválidas" })
     }
+
     clearFailedAttempts(req)
 
     const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET || "supersecret123")
