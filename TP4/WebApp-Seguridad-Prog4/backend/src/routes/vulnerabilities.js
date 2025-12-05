@@ -4,7 +4,7 @@ const vulnerabilityController = require("../controllers/vulnerabilityController"
 const { uploadMiddleware, uploadFile } = require("../controllers/uploadController")
 const csrf = require("csurf")
 
-const csrfProtection = csrf({ cookie: false })
+const csrfProtection = csrf({ cookie: true })
 
 // Command Injection
 router.post("/ping", vulnerabilityController.ping)

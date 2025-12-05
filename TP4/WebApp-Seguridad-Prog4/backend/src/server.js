@@ -22,12 +22,16 @@ app.use(express.urlencoded({ extended: true }));
 // Servir archivos estáticos (uploads)
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// Session para CSRF (vulnerable - sin token CSRF)
+// Session con configuración segura para CSRF
 app.use(session({
   secret: 'vulnerable-secret',
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: false }
+  cookie: { 
+    secure: false, // en producción debería ser true
+    httpOnly: true,
+    sameSite: 'strict'
+  }
 }));
 
 // Usar todas las rutas con prefijo /api
