@@ -8,22 +8,29 @@ describe('Seguridad: CSRF (Cross-Site Request Forgery)', () => {
   let agent;
 
   beforeEach(() => {
-    app = express();
-    app.use(express.json());
-    app.use(session({
-      secret: 'test-secret',
-      resave: false,
-      saveUninitialized: true
-    }));
-    
+    app = express()
+    app.use(express.json())
+    app.use(
+      session({
+        secret: "test-secret",
+        resave: false,
+        saveUninitialized: true,
+        cookie: {
+          sameSite: "strict",
+          httpOnly: true,
+          secure: false,
+        },
+      }),
+    )
+
     // Middleware para simular usuario autenticado
     app.use((req, res, next) => {
-      req.session.userId = 1;
-      next();
-    });
-    
-    app.use('/api', vulnerabilityRoutes);
-    agent = request.agent(app);
+      req.session.userId = 1
+      next()
+    })
+
+    app.use("/api", vulnerabilityRoutes)
+    agent = request.agent(app)
   });
 
   test('❌ DEBE FALLAR: Las transferencias deben requerir token CSRF', async () => {
@@ -64,7 +71,7 @@ describe('Seguridad: CSRF (Cross-Site Request Forgery)', () => {
 
     // El token debe ser único y no predecible
     const token1 = tokenResponse.body.csrfToken;
-    
+
     // Obtener otro token en una nueva sesión
     const agent2 = request.agent(app);
     const tokenResponse2 = await agent2.get('/api/csrf-token');
@@ -114,7 +121,7 @@ describe('📝 INSTRUCCIONES PARA CORREGIR CSRF', () => {
          return res.status(403).json({ error: 'Invalid origin' });
        }
     `;
-    
+
     console.log(instrucciones);
     expect(true).toBe(true);
   });
